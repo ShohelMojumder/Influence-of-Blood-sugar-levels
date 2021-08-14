@@ -1,0 +1,509 @@
+---
+title: 'Final exam - data formatting for question '
+author: "Md Shohel Mojumder"
+date: "March 08, 2021"
+output:
+  pdf_document: default
+---
+
+```{r}
+#chunk of code to knit properly in pdf
+library(knitr)
+opts_chunk$set(tidy.opts=list(width.cutoff=60),tidy=TRUE)
+```
+
+###Answer to the questions no 2a and 2b
+
+```{r message=FALSE, warning=FALSE}
+#install.packages("Hmisc")
+library(Hmisc)
+kiggs <- spss.get("KiGGS03_06.sav",use.value.labels = FALSE)
+head(kiggs[, c('HbA1c','bmiB','sex', 'age2','fq44', 'fq44a')])
+```
+
+
+```{r}
+kiggs$sex<- factor(kiggs$sex,labels = c("boys", "girls"))
+kiggs$age2<- factor(kiggs$age2,labels = c("0-1y", "2-3y", "4-5y", "6-7y", "8-9y", "10-11y", "12-13y", "14-15y", "16-17y"))
+kiggs$fq44<- factor(kiggs$fq44,labels = c("never", "1/month", "2-3/month", "1-2/week", "3-4/week", "5-6/week", "1/day", "2-3/day", "4-5/day", ">5/day"))
+kiggs$fq44a <- factor(kiggs$fq44a,labels = c("never", "1/4 cup (or less)", "1/2 cup", "1 cup", "2 cups", "3 cups (or more)"))
+```
+
+
+###Answre to the questions 2c
+
+
+```{r}
+# Saving the data.
+save(kiggs, file = "data_formatting.RData")
+```
+
+
+###Answer of the question 3a
+
+```{r}
+str(kiggs$sex)
+```
+sex is a nominal variable.
+
+```{r}
+str(kiggs$age2)
+str(kiggs$fq44)
+str(kiggs$fq44a)
+```
+
+age2, fq44, fq44a are  Ordinal variables.
+
+```{r}
+str(kiggs$HbA1c)
+str(kiggs$bmiB)
+```
+HbA1c, bmiB are metric Variables.
+
+In short,sex is a nominal variable.
+age2, fq44, fq44a are  Ordinal variables.
+HbA1c, bmiB are metric Variables.
+
+
+#which descriptive statistic is best suited?
+
+sex is a nominal variable.It has only two categories.Therefore,it would be better suited by the frequencies descriptive statistics.
+
+age2, fq44, fq44a are Ordinal Variables.Ordinal variables are those which could be ranked and calculated median, range, and quantiles. However, they are not appropriate for the mean and standard deviation. Moreover,If any ordinal variable does not have many categories, they are good for the frequencies descriptive statistics. Therefore,age2, fq44, fq44a are best suited for the frequencies descriptive statistics.
+
+HbA1c, bmiB are metric variables.They have continuous values.Therefore,they are suited with mean/standard deviation descriptive statistics.
+
+
+#calculation of descriptive statistics and display them in a table
+
+```{r, results = "asis",warning=FALSE,message=FALSE}
+# install.packages("qwraps2")
+library(qwraps2)
+options(qwraps2_markup = "markdown")
+
+our_summary <-
+  
+list("HbA1c(Blood Sugar Levels)" =
+list("Mean (SD)" = ~ qwraps2::mean_sd(.data$HbA1c, denote_sd = "paren", na_rm = TRUE, 
+                                                                        show_n = "never")),
+"bmiB(Body Mass Index)" =
+list("Mean (SD)" = ~ qwraps2::mean_sd(.data$bmiB, denote_sd = "paren", na_rm = TRUE,
+                                                                       show_n = "never")),
+"SEX" =
+list("boys" = ~ qwraps2::n_perc0(.data$sex == "boys", show_symbol = TRUE, na_rm = TRUE),
+"girls"  = ~ qwraps2::n_perc0(.data$sex == "girls", show_symbol = TRUE, na_rm = TRUE)),
+
+"Age Group" =
+list("0-1y" = ~ qwraps2::n_perc0(.data$age2 == "0-1y", show_symbol = TRUE, na_rm = TRUE),
+"2-3y"  = ~ qwraps2::n_perc0(.data$age2 == "2-3y", show_symbol = TRUE, na_rm = TRUE),
+"4-5y"  = ~ qwraps2::n_perc0(.data$age2 == "4-5y", show_symbol = TRUE, na_rm = TRUE),
+"6-7y" = ~ qwraps2::n_perc0(.data$age2 == "6-7y", show_symbol = TRUE, na_rm = TRUE),
+"8-9y"  = ~ qwraps2::n_perc0(.data$age2 == "8-9y", show_symbol = TRUE, na_rm = TRUE),
+"10-11y"  = ~ qwraps2::n_perc0(.data$age2 == "10-11y", show_symbol = TRUE, na_rm = TRUE),
+"12-13y"  = ~ qwraps2::n_perc0(.data$age2 == "12-13y", show_symbol = TRUE, na_rm = TRUE),
+"14-15y"  = ~ qwraps2::n_perc0(.data$age2 == "14-15y", show_symbol = TRUE, na_rm = TRUE),
+"16-17y"  = ~ qwraps2::n_perc0(.data$age2 == "16-17y", show_symbol = TRUE, na_rm = TRUE)),
+
+"fq44(Sanke Frequency)" =
+list("never" = ~ qwraps2::n_perc0(.data$fq44 == "never", show_symbol = TRUE, na_rm = TRUE),
+"1/month"  = ~ qwraps2::n_perc0(.data$fq44 == "1/month", show_symbol = TRUE, na_rm = TRUE),
+"2-3/month"  = ~ qwraps2::n_perc0(.data$fq44 == "2-3/month", show_symbol = TRUE, na_rm = TRUE),
+"1-2/week" = ~ qwraps2::n_perc0(.data$fq44 == "1-2/week", show_symbol = TRUE, na_rm = TRUE),
+"3-4/week"  = ~ qwraps2::n_perc0(.data$fq44 == "3-4/week", show_symbol = TRUE, na_rm = TRUE),
+"5-6/week"  = ~ qwraps2::n_perc0(.data$fq44 == "5-6/week", show_symbol = TRUE, na_rm = TRUE),
+"1/day"  = ~ qwraps2::n_perc0(.data$fq44 == "1/day", show_symbol = TRUE, na_rm = TRUE),
+"2-3/day"  = ~ qwraps2::n_perc0(.data$fq44 == "2-3/day", show_symbol = TRUE, na_rm = TRUE),
+"4-5/day"  = ~ qwraps2::n_perc0(.data$fq44 == "4-5/day", show_symbol = TRUE, na_rm = TRUE),
+">5/day"  = ~ qwraps2::n_perc0(.data$fq44 == ">5/day", show_symbol = TRUE, na_rm = TRUE)),
+
+"fq44a(Sanke Amount)" =
+list("never" = ~ qwraps2::n_perc0(.data$fq44a == "never", show_symbol = TRUE, na_rm = TRUE),
+"1/4 cup (or less)"  = ~ qwraps2::n_perc0(.data$fq44 == "1/4 cup (or less)", show_symbol = TRUE,
+                                                                              na_rm = TRUE),
+"1/2 cup"  = ~ qwraps2::n_perc0(.data$fq44a == "1/2 cup", show_symbol = TRUE, na_rm = TRUE),
+"1 cup" = ~ qwraps2::n_perc0(.data$fq44a == "1 cup", show_symbol = TRUE, na_rm = TRUE),
+"2 cups"  = ~ qwraps2::n_perc0(.data$fq44a == "2 cups", show_symbol = TRUE, na_rm = TRUE),
+"3 cups (or more)"  = ~ qwraps2::n_perc0(.data$fq44a == "3 cups (or more)", show_symbol = TRUE, 
+                                                                              na_rm = TRUE))
+       )
+our_table <- summary_table(kiggs, our_summary)
+
+our_table
+```
+
+#Missing values in the each variable are given below:
+
+```{r}
+sum(is.na(kiggs$HbA1c))
+sum(is.na(kiggs$bmiB))
+sum(is.na(kiggs$fq44))
+sum(is.na(kiggs$fq44a))
+```
+Variable HbA1c has 3543 missing values.
+variable bmiB has 147 missing values.
+Variable fq44 has 1873 missing values.
+variable fq44a has 1916 missing values.
+
+
+```{r}
+sum(is.na(kiggs$age2))
+sum(is.na(kiggs$sex))
+```
+
+The variables age2 and sex do not have any missing values.
+
+
+```{r message=FALSE, warning=FALSE}
+#no of observations complete data
+library(dplyr)
+observations <- select(kiggs, HbA1c, bmiB, sex, age2, fq44, fq44a)
+
+nrow(observations[complete.cases(observations), ])
+```
+The 13276 observations have complete data for all 6 variables.
+
+
+
+###Answer to the questions no 3b
+
+Since sex is a nominal variable, Barplot is more suitable for displaying their distribution.
+
+Histogram is more suitable for displaying the HbA1c and bmiB variables distribution as they are metric variables.
+
+age2, fq44, fq44a are  Ordinal variables.Therefore, Barplot is more suitable to display their distributions.
+
+
+
+```{r message=FALSE, warning=FALSE}
+# plot  the variables using ggplot()
+
+library(ggplot2)
+
+ggplot(data = kiggs, mapping = aes(x = bmiB)) + geom_histogram()
+ggplot(data = kiggs, mapping = aes(x = HbA1c)) + geom_histogram()
+
+
+ggplot(data = kiggs, mapping = aes(x = sex)) + geom_bar()
+ggplot(data = kiggs, mapping = aes(x = age2)) + geom_bar()
+ggplot(data = kiggs, mapping = aes(x = fq44)) + geom_bar()
+ggplot(data = kiggs, mapping = aes(x = fq44a)) + geom_bar()
+
+```
+
+
+
+
+
+
+###Answer to the questions no 4a
+
+```{r}
+#create variables
+HbA1c<-kiggs$HbA1c
+age <-kiggs$age2
+fq44<-kiggs$fq44
+fq44a<-kiggs$fq44a
+sex<-kiggs$sex
+bmi<-kiggs$bmiB
+```
+
+```{r}
+#compute linear regression model
+fit <-lm(HbA1c ~ as.numeric(fq44) + as.numeric(fq44a) + as.numeric(age) + bmi+ sex)
+summary(fit)$coefficients
+```
+
+
+#Check for each predictors
+
+```{r}
+table(fq44)
+table(fq44a)
+table(age)
+table(sex)
+```
+
+fq44,fq44a,age2,sex are factors.
+
+```{r}
+ str(bmi)
+ str(HbA1c)
+```
+
+
+HbA1c and bmiB are metric. 
+
+
+#how I take predictors into the regression model and Why is it that way?
+
+fq44,fq44a,age2,sex are factors.Moreover,HbA1c and bmiB are metrics.
+
+I have converted the fg44, fq44a, and age2 into the ordinal using as.numeric as it is easy to describe. There is one coefficient for one variable for its categories. This allows us to compare two adjacent categories and we estimated one parameter and we assume that it is always going up to the next categories by the same amount. On the other hand, if we take variables as they are, which means if we take the variables as factors it might give us much information. However, the Model may become very complicated. Moreover, from the assumptions below, we can see that relationship between predictors fq44,fq44a,age2, and outcome variable HbA1c is linear. Therefore, I have taken fg44, fq44a, and age2 as ordinal.
+
+bmi is a metric. I use it in my model without doing any conversion. 
+
+HbA1c is an outcome variable and it should be metric in the models.
+
+Sex is a binary variable and I have taken sex as a factor. If we have binary variables then if we incorporate either them using as.numeric() or dummy variables, the coefficient will always reflect an increase between the two categories as there are two values. Therefore, in the case of a binary variable, this does not matter whether you take it as a factor or ordinal. Therefore, I have not done any conversion using as. numeric() for the factor sex.
+
+
+
+###Answer to the questions no 4b
+
+```{r}
+#create variables and create the same model again to explain properly
+blood_sugar<-kiggs$HbA1c
+snack_frequent<-kiggs$fq44
+snack_amount<-kiggs$fq44a
+```
+
+
+
+
+```{r}
+#compute linear regression model again
+fit1 <-lm(blood_sugar ~ bmi + as.numeric(snack_frequent) + as.numeric(snack_amount) + sex +  as.numeric(age))
+summary(fit1)$coefficients
+```
+
+
+#Interpretion
+ 
+The coefficient value of fq44(snack_frequent) is -0.004. So there is a negative association here, which means if they consume snacks frequently, their blood sugar levels would get lower. However, increasing in the one unit(for example, going from never to 1/month ), blood sugar levels decrease by 0.004 as the value of the regression coefficient is 0.004. Here the value of the coefficient is very small, which means the differences of two adjacent groups in the variable are very small and, therefore, there are no big differences between the groups.
+
+
+The  coefficient fq44a(snack_amount) is 0.009,which is a positive.Therefore, there is a positive association here. This means if they consume more amount of snacks, their blood sugar levels would get higher. However, an increase of the one unit that is going from 1/month to 2-3/month  and 2-3/month  to 1-2/week, etc. Blood sugar level would increase by 0.009 as the value of the regression coefficient is 0.009. Here the value of the coefficient is almost zero which means the differences between two adjacent groups are almost zero and, therefore, there are no big differences between the group.
+
+
+The coefficient of bmi is close to zero and negative. So there is a negative association, which means if BMI gets higher, blood sugar levels would get lower.
+
+
+
+#Reprot on the p-values and conclusion based on the p-values
+
+The p-value of bmi is 0.42 which is greater than 0.05. Therefore, we accept the null hypothesis. There is no association between the outcome variable blood_sugar(HbA1c) and independent variable bmi.
+
+The p-value of fq44 is 0.21 and this is greater than 0.05.,we accept the null hypothesis. There is no association between the outcome variable blood_sugar(HbA1c) and predictor snack_frequent(fq44).
+
+The p-value of fq44a is 0.01 which is less than 0.05. Therefore, we reject the null hypothesis. There is an association between the outcome variable blood_sugar(HbA1c) and predictor  snack_amount (fq44a).
+
+The p-value of sex is close to zero. As it is less than 0.05.,we reject the null hypothesis. There is an association between the outcome variable blood_sugar(HbA1c) and the predictor sex.
+
+The p-value of age is also very small and it is close to zero. As it is less than 0.05, we reject the null hypothesis. There is an association between the outcome variable blood_sugar(HbA1c) and predictor age(age2).
+
+
+```{r message=FALSE, warning=FALSE}
+# get confidence intervals for regression coefficient:
+library(jtools)
+jtools::summ(fit, exp = F, confint = T, model.fit = F, digits = 3)
+```
+#95% confidence intervals for the variables
+
+The 95% confidence intervals for the regression coefficients(-0.001) of bmi is between -0.003 and 0.001.
+
+The 95% confidence intervals for the regression coefficients(-0.004) of fq44(as.numeric(fq44)) is between -0.010 and 0.002.
+
+The 95% confidence intervals for the regression coefficients(0.009) of fq44a(as.numeric(fq44a)) is between 0.002 and 0.016.
+
+The 95% confidence intervals for the regression coefficients(-0.045) of sex(sexgirls)  is between -0.060 and -0.030.
+
+The 95% confidence intervals for the regression coefficients(0.009) of age2(as.numeric(age))  is between 0.005 and 0.014.
+
+
+
+
+###Answer to the questions no 4c
+
+##Look at assumptions:
+
+
+
+(1) is HbA1c a continuous variable?
+
+```{r}
+str(HbA1c)
+```
+HbA1c is a  metric variables. So, HbA1c is a continuous variable.
+
+(2) relationship between the X variables and Y linear?
+
+Look at scatterplots:
+
+```{r}
+plot(as.numeric(fq44), HbA1c)
+plot(as.numeric(fq44a), HbA1c)
+plot(as.numeric(bmi), HbA1c)
+plot(as.numeric(age), HbA1c)
+plot(as.numeric(sex), HbA1c)
+```
+From the above scatter plots, we can see that the relationships are linear. For each variable, we can fit a regression line for the linear relationships.We can further investigate it by using the box plots below:  
+
+
+Look at boxplots with added regression line: 
+
+```{r}
+plot(fq44a, HbA1c)
+abline(lm(HbA1c ~ as.numeric(snack_amount)), col = "blue")
+
+plot(fq44, HbA1c)
+abline(lm(HbA1c ~ as.numeric(snack_frequent)), col = "blue")
+
+plot(bmi, HbA1c)
+abline(lm(HbA1c ~ as.numeric(bmi)), col = "blue")
+
+plot(age, HbA1c)
+abline(lm(HbA1c ~ as.numeric(age)), col = "blue")
+
+plot(sex, HbA1c)
+abline(lm(HbA1c ~ as.numeric(sex)), col = "blue")
+```
+
+We can get a lot of information by adding the regression line (with the respective predictor) in the boxplots. We can see a better regression line from these plots.
+
+Other way to look at it: look at residual plot.
+
+```{r}
+plot(fit, 1)
+```
+
+From above plot, we can see the linear relationship in the model. There is an optimal regression line for the model. therefore,this model has linear relationship.
+
+
+(3) No multicollinearity
+
+```{r}
+cor(data.frame(as.numeric(fq44), as.numeric(fq44a),as.numeric(age),bmi,as.numeric(sex)), use = "complete.obs", method = "spearman")
+```
+
+From above matrix we can see that:
+
+Between fq44 and fq44a has 0.44 correlation, which is a positive and the second highest correlation.
+Between fq44a and age has 0.34 correlation ,which is positive and a little bit higher.
+Between fq44a and bmi has 0.20 correlation ,which is positive and a slightly higher.
+Between fq44a and sex has -0.1 correlation, which is negative and a little bit lower.
+Between age and bmi has 0.64 correlation, which is positive and and the highest correlation.
+
+The correlation between the predictors mentioned above is not high enough to accept the multicollinearity in the model. The rest of the correlations between the predictors are close to zero. Therefore, these correlations between the predictors would not cause a strong bias to regression coefficients. The model fit looks fine, and there is not a high correlation between the predictors.
+
+
+If we calculate the Variance Inflation Factors of this model,we can see below:
+```{r}
+car::vif(fit)
+```
+
+The vif values of each predictor are less than 5.Since all the values of predictors are less than 2, we can say that there is no correlation between the predictors and model has no multicollinearity.
+
+
+(4) Normally-distributed residuals
+
+```{r}
+# Distribution of outcome:
+hist(HbA1c)
+qqnorm(scale(HbA1c)); abline(0,1)
+```
+If we plot the outcome variable on the histogram,It seems that it has a normal distribution.If we plot the outcome variable in the Normal Q-Q plot, we get most of the values on the line. So we can consider it as a normal distribution.
+
+```{r}
+# Distribution of residuals:
+hist(residuals(fit))
+```
+
+If we plot the residuals in the histogram ,we can see that the residuals are very close to normal distribution.  
+
+
+```{r}
+# Distribution of residuals:
+qqnorm(scale(residuals(fit))); abline(0,1)
+```
+
+If we plot the residuals in the Normal Q-Q plot, we get most of the values on the line. So we can consider it as a normal distribution.SO,we can say this model has normally distributed residuals.
+
+
+(5) Homoscedastic residuals
+
+```{r}
+# Look at first plot in:
+plot(fit,1)
+```
+
+This is Homoscedastic model as the errors which the model is making are basically constant across the independent variables of sex,age2,fq44,fq44a, and bmi.
+
+
+
+###Answer to the questions no 4d
+
+```{r}
+# Anova Model:
+summary(aov(HbA1c ~ fq44+fq44a))
+```
+
+Interpretation: 
+
+There is an association between fq44a and HbA1c since the p-value of the fq44a term is very small and This value is less than 0.05. Furthermore, there is also an association between fq44 and HbA1c as the p-value of this association is less than 0.05.
+
+
+#difference from this analysis to the regression analysis above
+
+In  linear regression,we estimate the relationship between predictors fq44a,fq44,age2,bmiB,sex and outcome variable HbA1c.In linear regressions,there is no association between predictors fq44 and outcome variable HbA1c as the P-value for fq44 is 0.2 which is greater than 0.05.Furthermore, there is an association between the predictors fq44a and HbA1c since the p-value of fq44a is 0.015 and this value is less than 0.05.
+
+In ANOVA model,Blood sugar levels differ between fq44 groups(since p-value is less than 0.05), also Blood sugar levels differ between fq44a groups (p-value<0.05).Both of these p-value is less than 0.05.
+
+In the linear regression, I transform factor variables into ordinal variables by using as.numeric() functions whereas In ANOVA, We need to use factor variables as predictors. 
+
+In the linear regression, I can arrange predictors in any order and it does not make any differences in the outcome variable blood sugar levels, however, In the ANOVA model If we change the order of predictors, different results might be produced.This has illustrated below:
+
+
+```{r}
+# Anova Model:
+summary(aov(HbA1c ~ fq44a+fq44))
+```
+
+
+###answer to the queston no 5a
+
+```{r}
+#create a binary variable from HbA1c
+
+threshold<-mean(kiggs$HbA1c, na.rm = TRUE)
+table(threshold)
+
+blood_sugarL<- kiggs$HbA1c >= threshold
+table(blood_sugarL)
+```
+
+
+
+###answer to the queston no: 5b
+
+```{r}
+# compute the logistic regression model:
+fitL <- glm(blood_sugarL ~ bmi+sex+ as.numeric(age)+as.numeric(snack_frequent) + as.numeric(snack_amount) , family = binomial(link = "logit"))
+summary(fitL)
+```
+
+
+###answer to the queston no: 5c
+
+The p-value of bmi (bmi) is 0.142.Moreover, the p-value of fq44 (snack_frequent) is 0.693 and the p-value of fq44a (snack_amount) is 0.263. 
+
+The p-value of sex and age(age2) are close to zero.
+
+Since the p-value of bmi(bmiL) is 0.142 which is greater than 0.05 and ,therefore,there is no association between bmi(bmi) and HbA1c(blood_sugar).Moreover,fq44 (snack_frequent) also has the p-value which is  greater than 0.05 and the fq44a(snack_amount) also has the p-value which is greater than 0.05.Therefore,both of them have no association with the outcome variable HbA1c(blood_sugar).On the other hand, The p-value of sex and age2 are lower than the 0.05,which means both sexL(sex) and ageL(age2) has the association with the outcome variable HbA1c(blood_sugarL).  
+
+
+
+###answer to the queston no 5d
+
+```{r}
+library(jtools)
+jtools::summ(fitL, exp = T, confint = T, model.fit = F, digits = 3)
+```
+Interpretation: 
+ 
+Their odds ratios of bmiB (bmi),sex(sex),age(age2),fq44(snack_frequent) and fq44a (snack_amount) are  0.992,0.813,1.046,0.994 and 1.020 respectively.
+
+If we want to interpret the above odds we can say for every 2-year that children are older (=increase in age2(ageL) by one unit), their odds of blood sugar levels are increased by 4.6% (i.e. their odds are 1.046  the odds of being 2 years younger). Similarly, the odds of girls' blood sugar levels are 18.7% (=1-0.813) smaller compared to the odds of boys. Moreover, The more frequently children consume snacks, The odds of their blood sugar levels decrease. For example, for every one-unit increase in fq44(snack_frequentL), their odds of blood sugar levels are reduced by 0.6% (=1-0.994).On the other hand, for every one-unit increase in fq44a(snack_amountL), the odds of their blood sugar levels are increased by 2%.This means if they consume more amount of snacks, the odds of their blood sugar levels rise. For the bmi,the odds of blood sugar level decrease by 0.8%(1-0.992).
+  
+###answer to the queston no 5e
+
+I would report results from the linear regression. Linear regression is good for a model in which the outcome variable has continuous value and Logistic regression is good for a model in which the outcome is a binary variable. Here, HbA1c is a metric variable which means it is a continuous variable. Therefore, I would select a linear regression model for this regression. Moreover, the Linear regression model is a more robust model than any other models.
